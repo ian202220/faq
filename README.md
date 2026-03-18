@@ -24,13 +24,16 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
         }
 
-        /* 使用官方 LOGO 作為 Header */
+        /* LOGO Header 區塊 */
         .logo-header { 
             width: 100%;
-            background: #ff0000; /* 官方紅底色 */
-            display: block;
+            background: #e60012; /* JINART 品牌紅 */
+            padding: 0;
+            margin: 0;
         }
         
         .logo-header img {
@@ -45,60 +48,66 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: white;
-            transition: transform 0.3s ease-out;
-            padding: 25px;
+            transition: transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1);
+            padding: 20px;
             overflow-y: auto;
         }
 
         #main-menu { z-index: 5; transform: translateX(0); }
         #detail-view { z-index: 6; transform: translateX(100%); background: #fcfcfc; }
 
-        /* 按鈕尺寸修復：符合手機寬度 */
+        /* 按鈕樣式優化 */
         .menu-item { 
-            background: #f2f2f2; 
-            margin-bottom: 20px; 
-            padding: 20px; 
+            background: #f5f5f7; 
+            margin-bottom: 15px; 
+            padding: 18px; 
             border-radius: 40px; 
             text-align: center; 
             cursor: pointer; 
             font-weight: bold;
-            font-size: 1.1rem;
-            color: #333;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            width: 100%; /* 撐開寬度 */
+            font-size: 1.05rem;
+            color: #1d1d1f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: 100%;
+            border: none;
+            display: block;
         }
         
-        .menu-item:active { transform: scale(0.96); background: #e0e0e0; }
+        .menu-item:active { transform: scale(0.97); background: #e8e8ed; }
 
         .content-card {
             background: white;
             padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             line-height: 1.8;
-            color: #444;
+            color: #333;
             font-size: 1rem;
+            margin-top: 10px;
         }
 
         .back-btn {
             display: block;
             margin: 30px auto;
-            color: #ff0000;
+            color: #e60012;
             font-weight: bold;
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             cursor: pointer;
+            text-decoration: none;
         }
 
-        a { color: #ff0000; text-decoration: underline; }
-        .hint { text-align: center; font-size: 0.85rem; color: #bbb; margin-top: 10px; }
+        a { color: #e60012; text-decoration: underline; font-weight: bold; }
+        .hint { text-align: center; font-size: 0.8rem; color: #999; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="logo-header">
-        <img src="https://raw.githubusercontent.com/ZOSeTzzMg34WY9qe7UQbun/Untitled/main/JINART%20%E5%93%81%E7%89%8C%E9%A0%AD%E5%83%8F886x425px.jpg" alt="JINART Logo">
+        <img src="https://raw.githubusercontent.com/ZOSeTzzMg34WY9qe7UQbun/Untitled/main/JINART%20%E5%93%81%E7%89%8C%E9%A0%AD%E5%83%8F886x425px.jpg" 
+             onerror="this.src='https://placehold.co/886x425/e60012/white?text=JINART+LOGO'" 
+             alt="JINART Logo">
     </div>
 
     <div class="view-wrapper">
@@ -124,31 +133,44 @@
     
     let startX = 0;
     let moveX = 0;
+    let isMoving = false;
 
     function openDetail(title, text) {
         detailContent.innerHTML = `<strong>【${title}】</strong><br><br>${text}`;
+        detailView.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1)';
         detailView.style.transform = 'translateX(0)';
     }
 
     function closeDetail() {
+        detailView.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1)';
         detailView.style.transform = 'translateX(100%)';
     }
 
-    // 滑動返回
-    detailView.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    detailView.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+        isMoving = true;
+    }, {passive: true});
+
     detailView.addEventListener('touchmove', e => {
+        if (!isMoving) return;
         moveX = e.touches[0].clientX;
         let diff = moveX - startX;
         if (diff > 0) {
             detailView.style.transition = 'none';
             detailView.style.transform = `translateX(${diff}px)`;
         }
-    });
-    detailView.addEventListener('touchend', () => {
-        detailView.style.transition = 'transform 0.3s ease-out';
-        if (moveX - startX > 100) closeDetail();
-        else detailView.style.transform = 'translateX(0)';
-        startX = 0; moveX = 0;
+    }, {passive: true});
+
+    detailView.addEventListener('touchend', e => {
+        isMoving = false;
+        detailView.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1)';
+        if (moveX - startX > 100) {
+            closeDetail();
+        } else {
+            detailView.style.transform = 'translateX(0)';
+        }
+        startX = 0; 
+        moveX = 0;
     });
 </script>
 
